@@ -1,0 +1,16 @@
+{
+  "name": "dialog-formatter",
+  "version": "0.1.0",
+  "bin": {
+    "dialog-formatter": "bin/index.js"
+  },
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "author": "https://github.com/RobinHartmann",
+  "license": "MIT",
+  "dependencies": {
+    "meow": "5.0.0",
+    "textract": "2.4.0"
+  }
+}

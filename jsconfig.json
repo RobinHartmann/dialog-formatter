@@ -1,0 +1,9 @@
+{
+    "files": [
+        "./bin/index.js"
+    ],
+    "compilerOptions": {
+        "target": "es2015",
+        "checkJs": true,
+    }
+}
