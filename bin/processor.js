@@ -29,10 +29,11 @@ const write = (outputFile) => (text) => new Promise((resolve, reject) =>
 
 const format = (text) => {
     const originalLines = text.split(LINE_SEPARATOR);
+    const trimmedLines = originalLines.map((value) => value.trim());
     const formattedLines = [];
     let currentChar;
 
-    for (const line of originalLines) {
+    for (const line of trimmedLines) {
         if (ONLY_WHITESPACE_REGEX.test(line)) {
             continue;
         } 
