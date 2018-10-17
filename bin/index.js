@@ -18,19 +18,18 @@ const parseArgs = async (helpMessage) => {
         input: cli.input[0],
         output: cli.input[1],
     };
-    let areArgsValid = true;
+    const errors = [];
 
     if (!config.input) {
-        areArgsValid = false;
-        console.error('Input must be specified');
+        errors.push('input must be specified');
     }
 
     if (!config.output) {
-        areArgsValid = false;
-        console.error('Output must be specified');
+        errors.push('output must be specified');
     }
 
-    if (!areArgsValid) {
+    if (errors.length) {
+        console.error(errors.join('\n'))
         console.log(cli.help);
         process.exit(1);
     }
@@ -40,11 +39,11 @@ const parseArgs = async (helpMessage) => {
 
 parseArgs(helpMessage)
     .then((config) => {
-        console.log('Running formatter...');
+        console.log('running formatter...');
         return runProcessor(config.input, config.output);
     })
-    .then(() => console.log('Formatter finished successfully'))
+    .then(() => console.log('formatter finished successfully'))
     .catch((reason) => {
-        console.error(reason);
+        console.error(reason.message);
         process.exit(1);
     });

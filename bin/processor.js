@@ -14,7 +14,7 @@ const CHARACTER_TO_DIALOG_SEPARATOR = '\t';
 const read = async (inputFile) => new Promise((resolve, reject) =>
     textract.fromFileWithPath(inputFile, TEXTTRACT_CONFIG, (err, text) =>
         err
-            ? reject('Could not extract text from input file, because of the following error:\n' + err.message)
+            ? reject(new Error('could not extract text from input file, because of the following error:\n' + err.message))
             : resolve(text)
     )
 );
@@ -22,7 +22,7 @@ const read = async (inputFile) => new Promise((resolve, reject) =>
 const write = (outputFile) => (text) => new Promise((resolve, reject) =>
     fs.writeFile(outputFile, text, (err) =>
         err
-            ? reject('Could not write output file, because of the following error:\n' + err.message)
+            ? reject(new Error('could not write output file, because of the following error:\n' + err.message))
             : resolve()
     )
 );
