@@ -5,7 +5,7 @@ const fs = require('fs');
 
 const TEXTTRACT_CONFIG = { preserveLineBreaks: true };
 
-const DIALOG_PREFIX_REGEX = /^\d\d[.:]\d\d(\s*[-–]\s*\d\d[.:]\d\d)?\s*/;
+const DIALOG_PREFIX_REGEX = /^\d+[.:]\d+(\s*[-–]\s*\d+[.:]\d+)?\s*/;
 const ONLY_WHITESPACE_REGEX = /^\s*$/;
 
 const LINE_SEPARATOR = '\n';
