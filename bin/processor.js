@@ -5,7 +5,7 @@ const fs = require('fs');
 
 const TEXTTRACT_CONFIG = { preserveLineBreaks: true };
 
-const DIALOG_PREFIX_REGEX = /^\d+[.:]\d+(\s*[-–]\s*\d+[.:]\d+)?\s*/;
+const DIALOG_PREFIX_REGEX = /^(\s*\d+[.:]\d+(\s*[-–]\s*\d+[.:]\d+)?\s*)|(\s+(?=\S+))/;
 const ONLY_WHITESPACE_REGEX = /^\s*$/;
 
 const LINE_SEPARATOR = '\n';
@@ -29,11 +29,10 @@ const write = (outputFile) => (text) => new Promise((resolve, reject) =>
 
 const format = (text) => {
     const originalLines = text.split(LINE_SEPARATOR);
-    const trimmedLines = originalLines.map((value) => value.trim());
     const formattedLines = [];
     let currentChar;
 
-    for (const line of trimmedLines) {
+    for (const line of originalLines) {
         if (ONLY_WHITESPACE_REGEX.test(line)) {
             continue;
         } 
@@ -44,10 +43,11 @@ const format = (text) => {
             }
 
             const newDialogPrefix = currentChar + CHARACTER_TO_DIALOG_SEPARATOR;
+            const newLine = line.replace(DIALOG_PREFIX_REGEX, newDialogPrefix)
 
-            formattedLines.push(line.replace(DIALOG_PREFIX_REGEX, newDialogPrefix));
+            formattedLines.push(newLine.trim());
         } else {
-            currentChar = line;
+            currentChar = line.trim();
         }
     }
 
