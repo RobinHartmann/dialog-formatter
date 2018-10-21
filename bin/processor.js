@@ -5,8 +5,9 @@ const fs = require('fs');
 
 const TEXTTRACT_CONFIG = { preserveLineBreaks: true };
 
-const DIALOG_PREFIX_REGEX = /^(\s*\d+[.:]\d+(\s*[-–]\s*\d+[.:]\d+)?\s*)|(\s+(?=\S+))/;
+const LINE_SEPARATOR_REGEX = /\r?\n/;
 const ONLY_WHITESPACE_REGEX = /^\s*$/;
+const DIALOG_PREFIX_REGEX = /^(\s*\d+[.:]\d+(\s*[-–]\s*\d+[.:]\d+)?\s*)|(\s+(?=\S+))/;
 
 const LINE_SEPARATOR = '\n';
 const CHARACTER_TO_DIALOG_SEPARATOR = '\t';
@@ -28,15 +29,15 @@ const write = (outputFile) => (text) => new Promise((resolve, reject) =>
 );
 
 const format = (text) => {
-    const originalLines = text.split(LINE_SEPARATOR);
+    const originalLines = text.split(LINE_SEPARATOR_REGEX);
     const formattedLines = [];
     let currentChar;
 
     for (const line of originalLines) {
         if (ONLY_WHITESPACE_REGEX.test(line)) {
             continue;
-        } 
-        
+        }
+
         if (DIALOG_PREFIX_REGEX.test(line)) {
             if (!currentChar) {
                 currentChar = 'NO_CHARACTER_FOUND';
