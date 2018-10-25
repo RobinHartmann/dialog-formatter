@@ -6,10 +6,10 @@ const runProcessor = require('./processor');
 
 const helpMessage = `
     Usage
-      $ index <input> <output>
+      $ dialog-formatter <input> <output>
  
     Example
-      $ index input.docx output.txt
+      $ dialog-formatter input.docx output.txt
 `;
 
 const parseArgs = async (helpMessage) => {
