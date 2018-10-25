@@ -1,32 +1,66 @@
 'use strict';
 
-const textract = require('textract');
-const fs = require('fs');
+const { promisify } = require('util');
+const { tmpNameSync } = require('tmp');
+const { readFileSync, unlinkSync, writeFileSync } = require('fs');
 
-const TEXTTRACT_CONFIG = { preserveLineBreaks: true };
+const exec = promisify(require('child_process').exec);
+
+const FS_OPTIONS = { encoding: 'utf8' };
 
 const LINE_SEPARATOR_REGEX = /\r?\n/;
 const ONLY_WHITESPACE_REGEX = /^\s*$/;
-const DIALOG_PREFIX_REGEX = /^(\s*\d+[.:]\d+(\s*[-–]\s*\d+[.:]\d+)?\s*)|(\s+(?=\S+))/;
+const DIALOG_PREFIX_REGEX = /[^\t]*\t+/;
 
 const LINE_SEPARATOR = '\n';
 const CHARACTER_TO_DIALOG_SEPARATOR = '\t';
 
-const read = async (inputFile) => new Promise((resolve, reject) =>
-    textract.fromFileWithPath(inputFile, TEXTTRACT_CONFIG, (err, text) =>
-        err
-            ? reject(new Error('could not extract text from input file, because of the following error:\n' + err.message))
-            : resolve(text)
-    )
-);
+const convert = async (inputFile) => {
+    const messageLines = [
+        'could not convert input file to a txt file using textutil:',
+    ];
+    const tmpFile = tmpNameSync();
+    let execResult;
 
-const write = (outputFile) => (text) => new Promise((resolve, reject) =>
-    fs.writeFile(outputFile, text, (err) =>
-        err
-            ? reject(new Error('could not write output file, because of the following error:\n' + err.message))
-            : resolve()
-    )
-);
+    try {
+        execResult = await exec(`textutil -convert txt ${inputFile} -output ${tmpFile}`);
+    } catch (err) {
+        messageLines.push(...[
+            `error code ${err.status}:`,
+            err.stderr.trim(),
+        ]);
+
+        throw new Error(messageLines.join('\n'));
+    }
+
+    if (execResult.stderr) {
+        messageLines.push(...[
+            execResult.stderr.trim(),
+        ]);
+
+        throw new Error(messageLines.join('\n'));
+    }
+
+    return tmpFile;
+};
+
+const consume = (tmpFile) => {
+    let text;
+
+    try {
+        text = readFileSync(tmpFile, FS_OPTIONS);
+    } catch (err) {
+        throw new Error('could not read converted txt file:\n' + err);
+    }
+
+    try {
+        unlinkSync(tmpFile);
+    } catch (err) {
+        console.warn('could not clean up temporary converted text file at the following location:\n' + tmpFile);
+    }
+
+    return text;
+};
 
 const format = (text) => {
     const originalLines = text.split(LINE_SEPARATOR_REGEX);
@@ -44,7 +78,7 @@ const format = (text) => {
             }
 
             const newDialogPrefix = currentChar + CHARACTER_TO_DIALOG_SEPARATOR;
-            const newLine = line.replace(DIALOG_PREFIX_REGEX, newDialogPrefix)
+            const newLine = line.replace(DIALOG_PREFIX_REGEX, newDialogPrefix);
 
             formattedLines.push(newLine.trim());
         } else {
@@ -55,7 +89,16 @@ const format = (text) => {
     return formattedLines.join(LINE_SEPARATOR);
 };
 
-module.exports = (input, output) =>
-    read(input)
+const write = (outputFile) => (formattedText) => {
+    try {
+        writeFileSync(outputFile, formattedText);
+    } catch (err) {
+        throw new Error('could not write formatted text to output file:\n' + err);
+    }
+};
+
+module.exports = (inputFile, outputFile) =>
+    convert(inputFile)
+        .then(consume)
         .then(format)
-        .then(write(output));
+        .then(write(outputFile));

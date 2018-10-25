@@ -11,6 +11,6 @@
   "license": "MIT",
   "dependencies": {
     "meow": "5.0.0",
-    "textract": "2.4.0"
+    "tmp": "0.0.33"
   }
 }
