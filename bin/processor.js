@@ -16,89 +16,88 @@ const LINE_SEPARATOR = '\n';
 const CHARACTER_TO_DIALOG_SEPARATOR = '\t';
 
 const convert = async (inputFile) => {
-    const messageLines = [
-        'could not convert input file to a txt file using textutil:',
-    ];
-    const tmpFile = tmpNameSync();
-    let execResult;
+  const messageLines = [
+    'could not convert input file to a txt file using textutil:',
+  ];
+  const tmpFile = tmpNameSync();
+  let execResult;
 
-    try {
-        execResult = await exec(`textutil -convert txt ${inputFile} -output ${tmpFile}`);
-    } catch (err) {
-        messageLines.push(...[
-            `error code ${err.status}:`,
-            err.stderr.trim(),
-        ]);
+  try {
+    execResult = await exec(`textutil -convert txt ${inputFile} -output ${tmpFile}`);
+  } catch (err) {
+    messageLines.push(...[
+      `error code ${err.status}:`,
+      err.stderr.trim(),
+    ]);
 
-        throw new Error(messageLines.join('\n'));
-    }
+    throw new Error(messageLines.join('\n'));
+  }
 
-    if (execResult.stderr) {
-        messageLines.push(...[
-            execResult.stderr.trim(),
-        ]);
+  if (execResult.stderr) {
+    messageLines.push(...[
+      execResult.stderr.trim(),
+    ]);
 
-        throw new Error(messageLines.join('\n'));
-    }
+    throw new Error(messageLines.join('\n'));
+  }
 
-    return tmpFile;
+  return tmpFile;
 };
 
 const consume = (tmpFile) => {
-    let text;
+  let text;
 
-    try {
-        text = readFileSync(tmpFile, FS_OPTIONS);
-    } catch (err) {
-        throw new Error('could not read converted txt file:\n' + err);
-    }
+  try {
+    text = readFileSync(tmpFile, FS_OPTIONS);
+  } catch (err) {
+    throw new Error(`could not read converted txt file:\n${err}`);
+  }
 
-    try {
-        unlinkSync(tmpFile);
-    } catch (err) {
-        console.warn('could not clean up temporary converted text file at the following location:\n' + tmpFile);
-    }
+  try {
+    unlinkSync(tmpFile);
+  } catch (err) {
+    console.warn(`could not clean up temporary converted text file at the following location:\n${tmpFile}`);
+  }
 
-    return text;
+  return text;
 };
 
 const format = (text) => {
-    const originalLines = text.split(LINE_SEPARATOR_REGEX);
-    const formattedLines = [];
-    let currentChar;
+  const originalLines = text.split(LINE_SEPARATOR_REGEX);
+  const formattedLines = [];
+  let currentChar;
 
-    for (const line of originalLines) {
-        if (ONLY_WHITESPACE_REGEX.test(line)) {
-            continue;
-        }
-
-        if (DIALOG_PREFIX_REGEX.test(line)) {
-            if (!currentChar) {
-                currentChar = 'NO_CHARACTER_FOUND';
-            }
-
-            const newDialogPrefix = currentChar + CHARACTER_TO_DIALOG_SEPARATOR;
-            const newLine = line.replace(DIALOG_PREFIX_REGEX, newDialogPrefix);
-
-            formattedLines.push(newLine.trim());
-        } else {
-            currentChar = line.trim();
-        }
+  originalLines.forEach((line) => {
+    if (ONLY_WHITESPACE_REGEX.test(line)) {
+      return;
     }
 
-    return formattedLines.join(LINE_SEPARATOR);
-};
+    if (DIALOG_PREFIX_REGEX.test(line)) {
+      if (!currentChar) {
+        currentChar = 'NO_CHARACTER_FOUND';
+      }
 
-const write = (outputFile) => (formattedText) => {
-    try {
-        writeFileSync(outputFile, formattedText);
-    } catch (err) {
-        throw new Error('could not write formatted text to output file:\n' + err);
+      const newDialogPrefix = currentChar + CHARACTER_TO_DIALOG_SEPARATOR;
+      const newLine = line.replace(DIALOG_PREFIX_REGEX, newDialogPrefix);
+
+      formattedLines.push(newLine.trim());
+    } else {
+      currentChar = line.trim();
     }
+  });
+
+  return formattedLines.join(LINE_SEPARATOR);
 };
 
-module.exports = (inputFile, outputFile) =>
-    convert(inputFile)
-        .then(consume)
-        .then(format)
-        .then(write(outputFile));
+const write = outputFile => (formattedText) => {
+  try {
+    writeFileSync(outputFile, formattedText);
+  } catch (err) {
+    throw new Error(`could not write formatted text to output file:\n${err}`);
+  }
+};
+
+module.exports = (inputFile, outputFile) => convert(inputFile)
+  .then(consume)
+  .then(format)
+  .then(write(outputFile));
