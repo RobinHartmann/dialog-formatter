@@ -1,3 +1,4 @@
 *
 !/bin/*
+!/lib/*
 !/npm-shrinkwrap.json

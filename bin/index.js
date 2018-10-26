@@ -3,7 +3,7 @@
 'use strict';
 
 const meow = require('meow');
-const runProcessor = require('./processor');
+const runProcessor = require('../lib/processor');
 
 const parseArgs = async () => {
   const cli = meow(`
