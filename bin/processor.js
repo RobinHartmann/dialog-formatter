@@ -26,7 +26,7 @@ const convert = async (inputFile) => {
     execResult = await exec(`textutil -convert txt ${inputFile} -output ${tmpFile}`);
   } catch (err) {
     messageLines.push(...[
-      `error code ${err.status}:`,
+      `error code ${err.code}:`,
       err.stderr.trim(),
     ]);
 
