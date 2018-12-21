@@ -3,7 +3,8 @@
     "./bin/index.js"
   ],
   "compilerOptions": {
-    "target": "es2015",
     "checkJs": true,
+    "moduleResolution": "node",
+    "target": "es2015",
   }
 }

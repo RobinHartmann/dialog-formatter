@@ -17,6 +17,9 @@
     "tmp": "0.0.33"
   },
   "devDependencies": {
+    "@types/meow": "5.0.0",
+    "@types/node": "10.12.18",
+    "@types/tmp": "0.0.33",
     "eslint": "5.7.0",
     "eslint-config-airbnb-base": "13.1.0",
     "eslint-plugin-import": "2.14.0"
