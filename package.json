@@ -9,13 +9,7 @@
     "lib": "./lib"
   },
   "main": "./lib/processor.js",
-  "bin": {
-    "dialog-formatter": "./bin/index.js"
-  },
-  "dependencies": {
-    "meow": "5.0.0",
-    "tmp": "0.0.33"
-  },
+  "bin": "./bin/index.js",
   "devDependencies": {
     "@types/meow": "5.0.0",
     "@types/node": "10.12.18",
@@ -23,6 +17,10 @@
     "eslint": "5.7.0",
     "eslint-config-airbnb-base": "13.1.0",
     "eslint-plugin-import": "2.14.0"
+  },
+  "dependencies": {
+    "meow": "5.0.0",
+    "tmp": "0.0.33"
   },
   "scripts": {
     "test": "echo \"Error: no test specified\" && exit 1"
