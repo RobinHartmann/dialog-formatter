@@ -27,7 +27,7 @@ This project is intended to be used with Visual Studio Code and the following ex
   * comes with OS X/macOS 10.4 or newer
 * [Node.js](https://nodejs.org) - JavaScript run-time environment
 
-### Installation
+### Installation and Usage
 
 ```bash
 # run without installation
