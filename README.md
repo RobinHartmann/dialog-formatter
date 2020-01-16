@@ -27,17 +27,24 @@ This project is intended to be used with Visual Studio Code and the following ex
   * comes with OS X/macOS 10.4 or newer
 * [Node.js](https://nodejs.org) - JavaScript run-time environment
 
-### Installation and Usage
+### Installation and Execution
 
 ```bash
+## variant A
 # run without installation
-npx dialog-formatter
+npx dialog-formatter <args>
 
-# install globally and run
-npm i -g dialog-formatter && dialog-formatter
+## variant B
+# install globally
+npm i -g dialog-formatter
+# run
+dialog-formatter <args>
 
-# install locally and run
-npm i dialog-formatter && npx dialog-formatter
+## variant C
+# install locally
+npm i dialog-formatter
+# run
+npx dialog-formatter <args>
 ```
 
 ## Document Format
@@ -98,7 +105,7 @@ DEEP THOUGHT Forty two.
 
 ## Authors
 
-* **Robin Hartmann** - *Initial work* - [robin-hartmann](https://github.com/robin-hartmann)
+* **Robin Hartmann** - [robin-hartmann](https://github.com/robin-hartmann)
 
 ## License
 
